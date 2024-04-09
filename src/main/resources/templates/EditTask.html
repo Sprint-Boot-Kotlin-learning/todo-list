@@ -1,0 +1,37 @@
+<div th:replace="structure/Header"></div>
+
+
+<div class="todo-list">
+
+    <div class="todo-row create-task">
+        <form action="/board/task/save" method="post">
+            <input type="hidden" name="id" th:value="${task.get().getId()}" />
+
+            <input type="text"
+                   name="title"
+                   id="task_title"
+                   placeholder="Task title…"
+                   th:value="${task.get().getTitle()}"
+                   maxlength="150"
+                   required />
+
+            <textarea id="task_description"
+                      type="text"
+                      name="description"
+                      placeholder="Task description…"
+                      th:value="${task.get().getDescription()}"></textarea>
+
+            <input type="date" name="endDate" id="end_date" required />
+
+            <div class="buttons">
+                <button class="button-success">
+                    Save task
+                </button>
+            </div>
+        </form>
+    </div>
+
+</div>
+
+
+<div th:replace="structure/Footer"></div>
