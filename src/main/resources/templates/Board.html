@@ -1,5 +1,43 @@
 <div th:replace="structure/Header"></div>
 
+<div class="actions">
+
+    <form action="/board/task/search" method="get">
+        <input type="hidden" name="page" value="1" />
+
+        <input type="text"
+               name="search"
+               id="search"
+               placeholder="Search a task…"
+               th:value="${search}" />
+
+        <button class="button-primary button-large">
+            Search
+        </button>
+    </form>
+
+    <form action="/board/task/filter" method="get">
+        <input type="hidden" name="page" value="1" />
+
+        <select name="status" id="status">
+            <optgroup>
+                <option value="all"
+                        th:selected="${status == 'all'}">All</option>
+
+                <option value="in_course"
+                        th:selected="${status == 'in_course'}">In course</option>
+
+                <option value="closed"
+                        th:selected="${status == 'closed'}">Closed</option>
+            </optgroup>
+        </select>
+
+        <button type="submit" class="button-primary button-large">
+            Filtrer
+        </button>
+    </form>
+
+</div>
 
 <div class="todo-list">
 
@@ -72,13 +110,17 @@
     </div>
 
     <div class="paginator">
-        <button class="button-secondary" th:if="${isPreviousPageExisting}">
-            <i class="fa-solid fa-angle-left"></i>
-        </button>
+        <a th:href="@{ '?page=' + ${page - 1} }" th:if="${isPreviousPageExisting}">
+            <button class="button-secondary">
+                <i class="fa-solid fa-angle-left"></i>
+            </button>
+        </a>
 
-        <button class="button-secondary" th:if="${isNextPageExisting}">
-            <i class="fa-solid fa-angle-right"></i>
-        </button>
+        <a th:href="@{ '?page=' + ${page + 1} }" th:if="${isNextPageExisting}">
+            <button class="button-secondary">
+                <i class="fa-solid fa-angle-right"></i>
+            </button>
+        </a>
     </div>
 
 </div>

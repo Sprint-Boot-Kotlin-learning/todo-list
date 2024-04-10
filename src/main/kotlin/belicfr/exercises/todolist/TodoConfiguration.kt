@@ -14,7 +14,7 @@ class TodoConfiguration {
     fun databaseInitializer(taskRepository: TaskRepository)
         = ApplicationRunner {
 
-        for (i in 1..50) {
+        for (i in 1..5) {
             taskRepository.save(Task(
                 title = "Buy GTA VI",
                 description = "Do not forget to buy GTA VI when it will be released.",

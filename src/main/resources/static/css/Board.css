@@ -1,6 +1,8 @@
 * {
     color: rgb(56, 56, 56);
     font-family: "Roboto Light", sans-serif;
+
+    box-sizing: border-box;
 }
 
 #board {
@@ -23,7 +25,7 @@ p.app-description {
 }
 
 hr.separator {
-    margin: 75px 0;
+    margin: 75px 0 50px;
 
     border: none;
     border-top: solid 1px #eaeaea;
@@ -35,6 +37,24 @@ hr.separator-simple {
     border-top: solid 1px #d7d7d7;
 
     margin: 20px 0;
+}
+
+.actions {
+    margin-bottom: 25px;
+
+    display: flex;
+    column-gap: 30px;
+    justify-content: space-between;
+    align-items: center;
+
+    width: 50%;
+}
+.actions form {
+    display: flex;
+    align-items: center;
+    column-gap: 10px;
+
+    height: 100%;
 }
 
 .todo-list {
@@ -191,12 +211,19 @@ hr.separator-simple {
 input,
 select,
 textarea {
-    padding: 10px;
-
     border: solid 1px #bebebe;
     border-radius: 5px;
 
     font-size: 1.1rem;
+}
+
+input,
+textarea {
+    padding: 10px;
+}
+
+select {
+    padding: 9px 10px;
 }
 
 textarea {
@@ -211,6 +238,11 @@ button {
 
     font-size: 1rem;
 }
+button.button-large {
+    padding: 12px 10px;
+
+    height: 43px;
+}
 button.button-primary {
     background: #008cff;
 
@@ -224,4 +256,22 @@ button.button-success {
 
 a {
     text-decoration: none;
+}
+
+.vertical-separator {
+    width: 1px;
+
+    background: #bebebe;
+
+    flex: none;
+}
+
+.error-container {
+    display: flex;
+    flex-direction: column;
+    row-gap: 20px;
+}
+.error-container > .error-title {
+    font-size: 20px;
+    font-weight: 700;
 }

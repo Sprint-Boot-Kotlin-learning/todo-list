@@ -9,19 +9,16 @@ import org.springframework.ui.Model
 import org.springframework.ui.set
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PostMapping
+import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.context.request.WebRequest
 import org.springframework.web.servlet.view.RedirectView
 
 @Controller
-class IErrorController(private val appProperties: AppProperties,
-                       private val errorAttributes: ErrorAttributes) {
+@RequestMapping("/error")
+class ErrorController(private val appProperties: AppProperties,
+                      private val errorAttributes: ErrorAttributes) {
 
-    @GetMapping("/error", "/error/")
-    fun back(model: Model): RedirectView {
-        return Redirect.to("/board")
-    }
-
-    @PostMapping("/error", "/error/")
+    @GetMapping("", "/")
     fun page(model: Model,
              webRequest: WebRequest): String {
 
