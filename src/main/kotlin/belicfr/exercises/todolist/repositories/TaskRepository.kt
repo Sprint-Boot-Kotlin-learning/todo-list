@@ -17,4 +17,10 @@ interface TaskRepository: CrudRepository<Task, Long>,
 
     fun findAllByStatusOrderByIdDesc(status: Boolean,
                                      pageable: Pageable): List<Task>
+
+    fun findAllByTitleContainingOrDescriptionContainingAndStatusOrderByIdDesc(
+        titleSearch: String,
+        descriptionSearch: String,
+        status: Boolean,
+        pageable: Pageable): List<Task>
 }

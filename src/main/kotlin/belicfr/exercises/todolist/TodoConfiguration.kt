@@ -20,7 +20,7 @@ class TodoConfiguration {
         for (i in 1..5) {
             taskRepository.save(Task(
                 title = faker.lorem.sentence(),
-                description = faker.lorem.paragraph(),
+                description = faker.lorem.paragraph(1),
                 endDate = LocalDate.now(),
                 id = i.toLong()))
         }

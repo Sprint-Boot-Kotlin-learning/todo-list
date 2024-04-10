@@ -35,9 +35,26 @@ class BoardController(private val appProperties: AppProperties,
     }
 
     @GetMapping("/board", "/board/")
-    fun board(@RequestParam("page") page: Int = 1, model: Model): String {
+    fun board(@RequestParam("page") page: Int = 1,
+              @RequestParam("search") search: String = "",
+              @RequestParam("status") status: String = "all",
+              model: Model): String {
+
         val pageable: Pageable = PageRequest.of(page - 1, MAX_ROWS_PER_PAGE)
-        val pageTasks: List<Task> = taskRepository.findAllByOrderByIdDesc(pageable)
+        val statusBoolean = status == "in_course"
+        val pageTasks: List<Task>
+
+        if (this.isSearchingTask(search) && this.isFilteringTasks(status)) {
+            pageTasks = taskRepository.findAllByTitleContainingOrDescriptionContainingAndStatusOrderByIdDesc(
+                search, search, statusBoolean, pageable)
+        } else if (this.isSearchingTask(search)) {
+            pageTasks = taskRepository.findAllByTitleContainingOrDescriptionContainingOrderByIdDesc(
+                search, search, pageable)
+        } else if (this.isFilteringTasks(status)) {
+            pageTasks = taskRepository.findAllByStatusOrderByIdDesc(statusBoolean, pageable)
+        } else {
+            pageTasks = taskRepository.findAllByOrderByIdDesc(pageable)
+        }
 
         if (page < 1 || page > 1 && pageTasks.isEmpty()) {
             throw ResponseStatusException(HttpStatus.NOT_FOUND,
@@ -63,6 +80,8 @@ class BoardController(private val appProperties: AppProperties,
         model["isPreviousPageExisting"] = isPreviousPageExisting
         model["isNextPageExisting"] = nextPageContent.isNotEmpty()
         model["page"] = page
+        model["search"] = search
+        model["status"] = status
 
         return "Board"
     }
@@ -130,57 +149,10 @@ class BoardController(private val appProperties: AppProperties,
         return Redirect.to("/board")
     }
 
-    @GetMapping("/board/task/search",
-                "/board/task/search/")
-    fun searchTask(@RequestParam("search") search: String = "",
-                   @RequestParam("page") page: Int = 1,
-                   model: Model): String {
+    fun isSearchingTask(@RequestParam("search") search: String = ""): Boolean
+        = search.isNotBlank()
 
-        if (search.isBlank()) {
-            throw ResponseStatusException(HttpStatus.BAD_REQUEST,
-                                          "You must give a search expression.")
-        }
-
-        val pageable: Pageable = PageRequest.of(page - 1, MAX_ROWS_PER_PAGE)
-        val pageTasks: List<Task> = taskRepository
-            .findAllByTitleContainingOrDescriptionContainingOrderByIdDesc(
-                search, search, pageable)
-
-        if (page < 1 || page > 1 && pageTasks.isEmpty()) {
-            throw ResponseStatusException(HttpStatus.NOT_FOUND,
-                                          "There is not a page $page.")
-        }
-
-        val previousPageNumber: Int = page - 2
-        val isPreviousPageExisting: Boolean
-
-        if (previousPageNumber < 0) {
-            isPreviousPageExisting = false
-        } else {
-            val previousPage: Pageable = PageRequest.of(previousPageNumber, MAX_ROWS_PER_PAGE)
-            val previousPageContent: List<Task> = taskRepository.findAllByOrderByIdDesc(previousPage)
-            isPreviousPageExisting = previousPageContent.isNotEmpty()
-        }
-
-        val nextPage: Pageable = PageRequest.of(page, MAX_ROWS_PER_PAGE)
-        val nextPageContent: List<Task> = taskRepository.findAllByOrderByIdDesc(nextPage)
-
-        model["app"] = appProperties
-        model["tasks"] = pageTasks
-        model["isPreviousPageExisting"] = isPreviousPageExisting
-        model["isNextPageExisting"] = nextPageContent.isNotEmpty()
-        model["search"] = search
-        model["page"] = page
-
-        return "Board"
-    }
-
-    @GetMapping("/board/task/filter",
-                "/board/task/filter/")
-    fun filterTasks(@RequestParam("status") status: String = "all",
-                    @RequestParam("page") page: Int = 1,
-                    model: Model): String {
-
+    fun isFilteringTasks(@RequestParam("status") status: String = "all"): Boolean {
         if (!status.equals("all")
             && !status.equals("in_course")
             && !status.equals("closed")) {
@@ -190,46 +162,7 @@ class BoardController(private val appProperties: AppProperties,
                                           "ALL, IN_COURSE et CLOSED sont acceptées")
         }
 
-        val pageable: Pageable = PageRequest.of(page - 1, MAX_ROWS_PER_PAGE)
-        val pageTasks: List<Task>
-
-        if (status.equals("all")) {
-            pageTasks = taskRepository.findAllByOrderByIdDesc(pageable)
-        } else {
-            val statusBooleanValue: Boolean = status.equals("in_course")
-
-            pageTasks = taskRepository
-                .findAllByStatusOrderByIdDesc(
-                    statusBooleanValue, pageable)
-        }
-
-        if (page < 1 || page > 1 && pageTasks.isEmpty()) {
-            throw ResponseStatusException(HttpStatus.NOT_FOUND,
-                                          "There is not a page $page.")
-        }
-
-        val previousPageNumber: Int = page - 2
-        val isPreviousPageExisting: Boolean
-
-        if (previousPageNumber < 0) {
-            isPreviousPageExisting = false
-        } else {
-            val previousPage: Pageable = PageRequest.of(previousPageNumber, MAX_ROWS_PER_PAGE)
-            val previousPageContent: List<Task> = taskRepository.findAllByOrderByIdDesc(previousPage)
-            isPreviousPageExisting = previousPageContent.isNotEmpty()
-        }
-
-        val nextPage: Pageable = PageRequest.of(page, MAX_ROWS_PER_PAGE)
-        val nextPageContent: List<Task> = taskRepository.findAllByOrderByIdDesc(nextPage)
-
-        model["app"] = appProperties
-        model["tasks"] = pageTasks
-        model["isPreviousPageExisting"] = isPreviousPageExisting
-        model["isNextPageExisting"] = nextPageContent.isNotEmpty()
-        model["status"] = status
-        model["page"] = page
-
-        return "Board"
+        return status.equals("in_course") || status.equals("closed")
     }
 
     @PostMapping("/board/task/delete", "/board/task/delete/")

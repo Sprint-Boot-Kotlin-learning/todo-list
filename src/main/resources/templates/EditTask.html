@@ -21,7 +21,7 @@
                       placeholder="Task description…"
                       th:value="${task.get().getDescription()}"></textarea>
 
-            <input type="date" name="endDate" id="end_date" required />
+            <input type="date" name="endDate" id="end_date" th:value="${task.get().getEndDate()}" required />
 
             <div class="buttons">
                 <button class="button-success">
